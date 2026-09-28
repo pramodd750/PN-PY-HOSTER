@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Pricing — Pro VPS Panel{% endblock %}
+
+{% block content %}
+<h1 class="section-title" style="margin-top:10px">Simple, <span class="grad">honest pricing</span></h1>
+<p style="text-align:center;color:var(--txt-dim);max-width:600px;margin:0 auto 10px">
+  Pick a plan and start hosting your scripts in minutes.
+</p>
+<div class="pricing-grid">
+  {% for p in pricing.plans %}
+  <div class="price-card {% if loop.index == 3 %}popular{% endif %}">
+    {% if loop.index == 3 %}<div class="popular-tag">POPULAR</div>{% endif %}
+    <div class="price-name">{{ p.name }}</div>
+    <div class="price-dur">{{ p.duration }}</div>
+    <div class="price-amt">{{ pricing.currency }}{{ p.price }}</div>
+    <ul class="price-feat">
+      {% for f in p.features.split(',') %}
+        {% if f.strip() %}<li>{{ f.strip() }}</li>{% endif %}
+      {% endfor %}
+    </ul>
+    <a href="{{ url_for('login') }}" class="btn-primary" style="width:100%;justify-content:center">Get Started</a>
+  </div>
+  {% endfor %}
+</div>
+<div style="text-align:center;margin-top:40px;color:var(--txt-mute)">
+  Need help? <strong style="color:var(--txt-dim)">{{ pricing.contact }}</strong>
+</div>
+{% endblock %}
