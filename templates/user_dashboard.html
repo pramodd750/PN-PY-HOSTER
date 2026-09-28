@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}My Server — Pro VPS Panel{% endblock %}
+
+{% block content %}
+<div class="dash-head">
+  <div class="dash-title">
+    Hey, <span class="grad">{{ username }}</span>
+    <span>
+      {% if running %}<span class="pill pill-ok"><span class="dot"></span>Running · {{ running_file }}</span>
+      {% else %}<span class="pill pill-off">● Stopped</span>{% endif %}
+    </span>
+  </div>
+  <div style="text-align:right;color:var(--txt-mute);font-size:.86rem">
+    Expires: <strong style="color:var(--txt-dim)" id="expires-at" data-ts="{{ expires_at }}">—</strong>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="files">📁 Files</button>
+  <button class="tab" data-tab="control">🎛️ Control</button>
+  <button class="tab" data-tab="logs">📡 Live Logs</button>
+  <button class="tab" data-tab="install">📦 Install Modules</button>
+</div>
+
+<div class="tab-panel active" id="panel-files">
+  <div class="card" style="margin-bottom:22px">
+    <h2>Upload Files</h2>
+    <p class="card-sub">Supported: .py, .js, .mjs, .cjs, .sh — max 200MB total</p>
+    <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+      <div class="form-row"><input class="input" type="file" name="files" multiple required></div>
+      <button class="btn-primary">⬆ Upload</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Your Files ({{ files|length }})</h2>
+    <p class="card-sub">Click Run to start a file. Only one file runs at a time per user.</p>
+    {% if files %}
+    <ul class="file-list">
+      {% for f in files %}
+      <li>
+        <span class="fname">📄 {{ f }}</span>
+        <div class="file-actions">
+          <button class="btn-sm btn-ok" onclick="startFile('{{ f }}')">▶ Run</button>
+          <a class="btn-sm btn-info" href="{{ url_for('file_view', name=f) }}" target="_blank" style="text-decoration:none">👁 View</a>
+          <form method="post" action="{{ url_for('file_delete', name=f) }}" style="display:inline" onsubmit="return confirm('Delete {{ f }}?')">
+            <button class="btn-sm btn-err">🗑</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:var(--txt-mute);padding:20px 0">No files yet. Upload your first script above.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-control">
+  <div class="card">
+    <h2>Process Control</h2>
+    <p class="card-sub">Start, stop, or restart your running script.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn-sm btn-ok"   onclick="ctl('restart')">🔄 Restart</button>
+      <button class="btn-sm btn-warn" onclick="ctl('stop')">⏹ Stop</button>
+      <button class="btn-sm btn-err"  onclick="ctl('delete')">🗑 Kill &amp; Clear</button>
+    </div>
+    <div style="margin-top:26px">
+      <strong>Status:</strong>
+      <span id="status-text" style="color:var(--txt-dim);margin-left:6px">Loading…</span>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-logs">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <h2 style="margin:0">📡 Live Output</h2>
+      <span class="pill" id="log-status">—</span>
+    </div>
+    <div class="terminal" id="term">Waiting for logs…</div>
+    <div style="margin-top:14px;color:var(--txt-mute);font-size:.82rem">Auto-refreshing every 1.5s · last 2000 lines kept</div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-install">
+  <div class="card">
+    <h2>📦 Install Modules</h2>
+    <p class="card-sub">Allowed: <code>pip install &lt;pkg&gt;</code> or <code>npm install &lt;pkg&gt;</code></p>
+    <form id="install-form" onsubmit="return doInstall(event)">
+      <div class="form-row"><input class="input" id="install-cmd" placeholder="pip install requests" required></div>
+      <button class="btn-primary">▶ Install</button>
+    </form>
+    <div class="terminal" id="install-term" style="margin-top:18px;height:260px;color:#bcaeff">Install log will appear here…</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
+{% endblock %}
