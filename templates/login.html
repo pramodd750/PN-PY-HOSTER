@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Login — Pro VPS Panel{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-sub">Sign in to access your VPS panel</p>
+    {% if error %}<div class="alert alert-err">{{ error }}</div>{% endif %}
+    <form method="post">
+      <div class="form-row">
+        <label>Username</label>
+        <input class="input" name="username" placeholder="your username" required autofocus>
+      </div>
+      <div class="form-row">
+        <label>Password</label>
+        <input class="input" name="password" type="password" placeholder="••••••••" required>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;margin-top:8px">Sign In →</button>
+    </form>
+    <p style="text-align:center;margin-top:20px;color:var(--txt-mute);font-size:.9rem">
+      New here? <a href="{{ url_for('pricing_page') }}" style="color:#bcaeff">View plans</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
