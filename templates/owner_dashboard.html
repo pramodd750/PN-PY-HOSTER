@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Owner Dashboard — Pro VPS Panel{% endblock %}
+
+{% block content %}
+<div class="dash-head">
+  <div class="dash-title">Owner Panel <span>Full control over users, plans &amp; billing</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="users">👥 Users</button>
+  <button class="tab" data-tab="create">➕ Create User</button>
+  <button class="tab" data-tab="pricing">💰 Pricing</button>
+</div>
+
+<div class="tab-panel active" id="panel-users">
+  <div class="card">
+    <h2>Active Users ({{ users|length }})</h2>
+    <p class="card-sub">Manage expiry and share auto-login links.</p>
+    {% if users %}
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Username</th><th>Status</th><th>Expires</th><th>Auto-Login Link</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for uname, info in users.items() %}
+        {% set exp = info.expires_at or 0 %}
+        {% set expired = exp > 0 and now > exp %}
+        <tr>
+          <td><strong>{{ uname }}</strong></td>
+          <td>
+            {% if expired %}<span class="pill pill-warn">Expired</span>
+            {% elif exp == 0 %}<span class="pill pill-ok">Lifetime</span>
+            {% else %}<span class="pill pill-ok"><span class="dot"></span>Active</span>{% endif %}
+          </td>
+          <td>{% if exp == 0 %}Never{% else %}<span data-ts="{{ exp }}" class="ts"></span>{% endif %}</td>
+          <td><input class="input" readonly style="font-size:.76rem;padding:8px 10px;min-width:220px"
+                value="{{ base_url }}/auto/{{ info.token }}" onclick="this.select()"></td>
+          <td>
+            <form method="post" action="{{ url_for('owner_extend', username=uname) }}" style="display:inline">
+              <input class="input" name="hours" value="24" style="width:70px;padding:6px;display:inline-block;font-size:.82rem">
+              <button class="btn-sm btn-info">+Extend</button>
+            </form>
+            <form method="post" action="{{ url_for('owner_delete', username=uname) }}" style="display:inline"
+                  onsubmit="return confirm('Delete {{ uname }} and all files?')">
+              <button class="btn-sm btn-err">🗑 Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p style="color:var(--txt-mute);padding:20px 0">No users yet. Create one from the "Create User" tab.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-create">
+  <div class="card" style="max-width:560px">
+    <h2>Create New User</h2>
+    <p class="card-sub">Set duration in hours (0 = lifetime, 24 = 1 day, 168 = 7 days, 720 = 30 days)</p>
+    <form method="post" action="{{ url_for('owner_create') }}">
+      <div class="form-row"><label>Username</label>
+        <input class="input" name="username" placeholder="e.g. client01" required></div>
+      <div class="form-row"><label>Password</label>
+        <input class="input" name="password" placeholder="strong password" required></div>
+      <div class="form-row"><label>Duration (hours)</label>
+        <input class="input" name="hours" type="number" value="24" min="0" step="1"></div>
+      <button class="btn-primary">✨ Create User</button>
+    </form>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-pricing">
+  <div class="card">
+    <h2>Edit Pricing Plans</h2>
+    <p class="card-sub">These plans show on the public /pricing page.</p>
+    <form method="post" action="{{ url_for('owner_pricing') }}">
+      <div class="grid-2" style="margin-bottom:14px">
+        <div class="form-row"><label>Currency Symbol</label>
+          <input class="input" name="currency" value="{{ pricing.currency }}"></div>
+        <div class="form-row"><label>Contact Info</label>
+          <input class="input" name="contact" value="{{ pricing.contact }}"></div>
+      </div>
+      {% for p in pricing.plans %}
+      <div style="border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px">
+        <div class="grid-2" style="gap:12px">
+          <div class="form-row"><label>Plan Name</label><input class="input" name="p_name" value="{{ p.name }}"></div>
+          <div class="form-row"><label>Duration</label><input class="input" name="p_duration" value="{{ p.duration }}"></div>
+          <div class="form-row"><label>Price</label><input class="input" name="p_price" value="{{ p.price }}"></div>
+          <div class="form-row"><label>Features (comma-separated)</label><input class="input" name="p_features" value="{{ p.features }}"></div>
+        </div>
+      </div>
+      {% endfor %}
+      <div id="new-plans"></div>
+      <button type="button" class="btn-ghost-lg" onclick="addPlan()" style="margin-right:10px">+ Add Plan</button>
+      <button class="btn-primary">💾 Save Plans</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/owner.js') }}"></script>
+{% endblock %}
