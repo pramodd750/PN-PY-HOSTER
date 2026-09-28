@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Pro VPS Panel{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="{{ url_for('home') }}" class="brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">Pro<em>VPS</em></span>
+    </a>
+    <div class="nav-links">
+      {% if session.get('role') == 'owner' %}
+        <a href="{{ url_for('owner_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}" class="btn-ghost">Logout</a>
+      {% elif session.get('role') == 'user' %}
+        <a href="{{ url_for('user_dashboard') }}">My Server</a>
+        <a href="{{ url_for('logout') }}" class="btn-ghost">Logout</a>
+      {% else %}
+        <a href="{{ url_for('landing') }}">Home</a>
+        <a href="{{ url_for('pricing_page') }}">Pricing</a>
+        <a href="{{ url_for('login') }}" class="btn-primary-sm">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>© 2026 Pro VPS Panel · Built for <strong>shappno / pn</strong></p>
+</footer>
+
+<script>
+function toast(msg, type){
+  type = type || 'info';
+  var el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function(){ el.classList.add('show'); }, 10);
+  setTimeout(function(){
+    el.classList.remove('show');
+    setTimeout(function(){ el.remove(); }, 300);
+  }, 2600);
+}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
