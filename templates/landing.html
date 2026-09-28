@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Pro VPS Panel — Host Python, Node & Shell 24/7{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <span class="badge">🚀 Premium VPS Hosting</span>
+  <h1>Run your <span class="grad">Python</span>, <span class="grad">Node.js</span> &amp; <span class="grad">Shell</span> scripts 24/7</h1>
+  <p class="hero-sub">A clean, powerful control panel with live logs, module installer, and instant deployment — all from your browser.</p>
+  <div class="hero-cta">
+    <a href="{{ url_for('pricing_page') }}" class="btn-primary">View Pricing</a>
+    <a href="{{ url_for('login') }}" class="btn-ghost-lg">Client Login →</a>
+  </div>
+  <div class="hero-stats">
+    <div><strong>99.9%</strong><span>Uptime</span></div>
+    <div><strong>200MB</strong><span>Upload Limit</span></div>
+    <div><strong>24/7</strong><span>Auto Restart</span></div>
+    <div><strong>1-click</strong><span>Deploy</span></div>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">Everything you need to <span class="grad">ship fast</span></h2>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="fc-icon">🐍</div><h3>Multi-Runtime</h3>
+      <p>Run <code>.py</code>, <code>.js</code>, and <code>.sh</code> files with a single click. Python, Node.js and Bash supported.</p></div>
+    <div class="feature-card"><div class="fc-icon">📡</div><h3>Live Logs</h3>
+      <p>Real-time stdout/stderr streaming so you always know exactly what your script is doing.</p></div>
+    <div class="feature-card"><div class="fc-icon">📦</div><h3>Module Installer</h3>
+      <p>Install Python packages with <code>pip</code> or Node modules with <code>npm</code> — right from the panel.</p></div>
+    <div class="feature-card"><div class="fc-icon">🔐</div><h3>Per-User Isolation</h3>
+      <p>Every client gets their own sandboxed directory, tokens, and process slot. No cross-access.</p></div>
+    <div class="feature-card"><div class="fc-icon">⚡</div><h3>Instant Deploy</h3>
+      <p>Upload, start, restart, or stop with one tap. Zero downtime workflow.</p></div>
+    <div class="feature-card"><div class="fc-icon">🎛️</div><h3>Owner Control</h3>
+      <p>Create users, set expiry, extend time, and edit pricing plans in real time.</p></div>
+  </div>
+</section>
+{% endblock %}
